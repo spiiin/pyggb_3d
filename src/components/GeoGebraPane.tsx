@@ -47,6 +47,7 @@ export const GeoGebraPane: React.FC<{}> = () => {
     }
 
     const params = {
+      appName: "3d",
       width: 1, // Will be overridden on load
       height: 1, // Will be overridden on load
       showToolBar: false,
@@ -63,7 +64,7 @@ export const GeoGebraPane: React.FC<{}> = () => {
       preventFocus: false,
       showZoomButtons: true,
       appletOnLoad: (api: any) => {
-        api.setPerspective("G");
+        api.setPerspective("T");
         // Because we only do the inject once, the following does not
         // cause a state-update/render loop:
         setGgbApi(api);
