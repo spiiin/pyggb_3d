@@ -20,6 +20,7 @@ import { register as registerNumberOfObjects } from "./wrappings/number-of-objec
 import { register as registerPlane } from "./wrappings/plane";
 import { register as registerCentroid } from "./wrappings/centroid";
 import { register as registerCross } from "./wrappings/cross";
+import { register as registerDot } from "./wrappings/dot";
 
 import { register as registerClearConsole } from "./app-ui/clear-console";
 
@@ -60,6 +61,7 @@ declare var Sk: SkulptApi;
   registerPlane(mod, appApi);
   registerCentroid(mod, appApi);
   registerCross(mod, appApi);
+  registerDot(mod, appApi);
 
   registerClearConsole(mod, appApi);
 
