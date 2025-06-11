@@ -73,6 +73,8 @@ export const runPythonProgram = (
   stdoutActions.clear();
   errorActions.clear();
   ggbApi.reset();
+  ggbApi.newConstruction(); //remove old objects
+  ggbApi.setPerspective("T");
   hidApi.clearRegistration();
 
   // TODO: Seems a bit clunky to reuse errorActions and stdoutActions
