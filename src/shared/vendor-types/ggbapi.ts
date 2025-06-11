@@ -16,7 +16,8 @@ export type GgbApi = {
 
   getXcoord(label: string): number;
   getYcoord(label: string): number;
-  setCoords(label: string, x: number, y: number): void;
+  getZcoord(label: string): number;
+  setCoords(label: string, x: number, y: number, z?: number): void;
 
   getColor(label: string): string;
   setColor(label: string, r: number, g: number, b: number): void;

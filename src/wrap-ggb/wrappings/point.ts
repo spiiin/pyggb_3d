@@ -23,6 +23,9 @@ interface SkGgbPoint extends SkGgbObject {
   $yCoord(this: SkGgbPoint): number;
   $ggbNumberY: SkGgbObject;
   $setYCoord(this: SkGgbPoint, y: number): void;
+  $zCoord(this: SkGgbPoint): number;
+  $ggbNumberZ: SkGgbObject;
+  $setZCoord(this: SkGgbPoint, z: number): void;
 }
 
 type SkGgbPointCtorSpec =
@@ -31,6 +34,7 @@ type SkGgbPointCtorSpec =
       kind: "coordinates";
       x: string;
       y: string;
+      z?: string;
     }
   | {
       kind: "arbitrary-on-object";
@@ -60,7 +64,7 @@ export const register = (
           break;
         }
         case "coordinates": {
-          setLabelCmd(`(${spec.x}, ${spec.y})`);
+          setLabelCmd(`(${spec.x}, ${spec.y}, ${spec.z})`);
           break;
         }
         case "arbitrary-on-object": {
@@ -100,6 +104,9 @@ export const register = (
       this.$ggbNumberY = ggb.wrapExistingGgbObject(
         ggb.evalCmd(`y(${this.$ggbLabel})`)
       );
+      this.$ggbNumberZ = ggb.wrapExistingGgbObject(
+        ggb.evalCmd(`z(${this.$ggbLabel})`)
+      );
 
       this.$updateHandlers = [];
       ggb.registerObjectUpdateListener(this.$ggbLabel, () =>
@@ -110,7 +117,7 @@ export const register = (
       tp$new(args, kwargs) {
         const badArgsError = new Sk.builtin.TypeError(
           "Point() arguments must be" +
-            " (x_coord, y_coord) or (object, parameter)"
+            " (x_coord, y_coord, [z_coord]) or (object, parameter)"
         );
 
         const make = (spec: SkGgbPointCtorSpec) =>
@@ -125,11 +132,13 @@ export const register = (
 
             throw badArgsError;
           }
-          case 2: {
+          case 2:
+          case 3: {
             if (args.every(ggb.isPythonOrGgbNumber)) {
               const x = ggb.numberValueOrLabel(args[0]);
               const y = ggb.numberValueOrLabel(args[1]);
-              return make({ kind: "coordinates", x, y });
+              const z = args.length === 3 ? ggb.numberValueOrLabel(args[2]) : undefined;
+              return make({ kind: "coordinates", x, y, z });
             }
 
             if (ggb.isGgbObject(args[0]) && ggb.isPythonOrGgbNumber(args[1])) {
@@ -145,11 +154,17 @@ export const register = (
         }
       },
       tp$str(this: SkGgbPoint) {
-        return new Sk.builtin.str(`(${this.$xCoord()}, ${this.$yCoord()})`);
+        const z = this.$zCoord();
+        return new Sk.builtin.str(
+          z !== undefined ? `(${this.$xCoord()}, ${this.$yCoord()}, ${z})` : `(${this.$xCoord()}, ${this.$yCoord()})`
+        );
       },
       $r(this: SkGgbPoint) {
+        const z = this.$zCoord();
         return new Sk.builtin.str(
-          `Point(${this.$xCoord()}, ${this.$yCoord()})`
+          z !== undefined 
+            ? `Point(${this.$xCoord()}, ${this.$yCoord()}, ${z})`
+            : `Point(${this.$xCoord()}, ${this.$yCoord()})`
         );
       },
       ...ggb.sharedOpSlots,
@@ -159,15 +174,21 @@ export const register = (
         return ggb.getXcoord(this.$ggbLabel);
       },
       $setXCoord(this: SkGgbPoint, x: number) {
-        // Hm; mildly annoying:
-        ggb.setCoords(this.$ggbLabel, x, this.$yCoord());
+        const z = this.$zCoord();
+        ggb.setCoords(this.$ggbLabel, x, this.$yCoord(), z);
       },
       $yCoord(this: SkGgbPoint) {
         return ggb.getYcoord(this.$ggbLabel);
       },
       $setYCoord(this: SkGgbPoint, y: number) {
-        // Hm; mildly annoying:
-        ggb.setCoords(this.$ggbLabel, this.$xCoord(), y);
+        const z = this.$zCoord();
+        ggb.setCoords(this.$ggbLabel, this.$xCoord(), y, z);
+      },
+      $zCoord(this: SkGgbPoint) {
+        return ggb.getZcoord(this.$ggbLabel);
+      },
+      $setZCoord(this: SkGgbPoint, z: number) {
+        ggb.setCoords(this.$ggbLabel, this.$xCoord(), this.$yCoord(), z);
       },
       $fireUpdateEvents(this: SkGgbPoint) {
         this.$updateHandlers.forEach((fun) => {
@@ -202,7 +223,6 @@ export const register = (
           return new Sk.builtin.float_(this.$xCoord());
         },
         $set(this: SkGgbPoint, pyX: SkObject) {
-          // Throw if not isIndependent(this)?
           throwIfNotNumber(pyX, "x coord");
           this.$setXCoord(pyX.v);
         },
@@ -224,6 +244,20 @@ export const register = (
       y_number: {
         $get(this: SkGgbPoint) {
           return this.$ggbNumberY;
+        },
+      },
+      z: {
+        $get(this: SkGgbPoint) {
+          return new Sk.builtin.float_(this.$zCoord());
+        },
+        $set(this: SkGgbPoint, pyZ: SkObject) {
+          throwIfNotNumber(pyZ, "z coord");
+          this.$setZCoord(Sk.ffi.remapToJs(pyZ));
+        },
+      },
+      z_number: {
+        $get(this: SkGgbPoint) {
+          return this.$ggbNumberZ;
         },
       },
       _ggb_type: ggb.sharedGetSets._ggb_type,

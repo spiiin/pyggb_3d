@@ -542,7 +542,8 @@ export type AugmentedGgbApi = {
   setValue(label: string, value: number): void;
   getXcoord(label: string): number;
   getYcoord(label: string): number;
-  setCoords(label: string, x: number, y: number): void;
+  getZcoord(label: string): number;
+  setCoords(label: string, x: number, y: number, z?: number): void;
   deleteObject(label: string): void;
   registerObjectUpdateListener(label: string, fun: () => void): void;
   sharedOpSlots: OperationSlots;
@@ -574,10 +575,11 @@ export const augmentedGgbApi = (ggbApi: GgbApi): AugmentedGgbApi => {
   const getValue = (label: string): any => ggbApi.getValue(label);
   const setValue = (label: string, value: number): void =>
     ggbApi.setValue(label, value);
-  const setCoords = (label: string, x: number, y: number): void =>
-    ggbApi.setCoords(label, x, y);
   const getXcoord = (label: string): number => ggbApi.getXcoord(label);
   const getYcoord = (label: string): number => ggbApi.getYcoord(label);
+  const getZcoord = (label: string): number => ggbApi.getZcoord(label);
+  const setCoords = (label: string, x: number, y: number, z?: number): void =>
+    ggbApi.setCoords(label, x, y, z);
   const deleteObject = (label: string): void => ggbApi.deleteObject(label);
   const registerObjectUpdateListener = (label: string, fun: () => void): void =>
     ggbApi.registerObjectUpdateListener(label, fun);
@@ -610,6 +612,7 @@ export const augmentedGgbApi = (ggbApi: GgbApi): AugmentedGgbApi => {
     setValue,
     getXcoord,
     getYcoord,
+    getZcoord,
     setCoords,
     deleteObject,
     registerObjectUpdateListener,
