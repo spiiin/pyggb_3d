@@ -23,6 +23,7 @@ import { register as registerCross } from "./wrappings/cross";
 import { register as registerDot } from "./wrappings/dot";
 import { register as registerUnitVector } from "./wrappings/unitvector";
 import { register as registerPerpendicularPlane } from "./wrappings/perpendicularplane";
+import { register as registerMidpoint } from "./wrappings/midpoint";
 
 import { register as registerClearConsole } from "./app-ui/clear-console";
 
@@ -66,6 +67,7 @@ declare var Sk: SkulptApi;
   registerDot(mod, appApi);
   registerUnitVector(mod, appApi);
   registerPerpendicularPlane(mod, appApi);
+  registerMidpoint(mod, appApi);
 
   registerClearConsole(mod, appApi);
 
