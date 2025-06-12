@@ -26,6 +26,7 @@ import { register as registerPerpendicularPlane } from "./wrappings/perpendicula
 import { register as registerMidpoint } from "./wrappings/midpoint";
 import { register as registerConvexHull } from "./wrappings/convexhull";
 import { register as registerTranslate } from "./wrappings/translate";
+import { register as registerClosestPoint } from "./wrappings/closestpoint";
 
 import { register as registerClearConsole } from "./app-ui/clear-console";
 
@@ -72,6 +73,7 @@ declare var Sk: SkulptApi;
   registerMidpoint(mod, appApi);
   registerConvexHull(mod, appApi);
   registerTranslate(mod, appApi);
+  registerClosestPoint(mod, appApi);
 
   registerClearConsole(mod, appApi);
 
