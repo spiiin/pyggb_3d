@@ -24,6 +24,10 @@ type SkGgbVectorCtorSpec =
       kind: "components";
       e1: SkObject;
       e2: SkObject;
+    }
+  | {
+      kind: "point";
+      point: SkGgbObject;
     };
 
 export const register = (mod: any, appApi: AppApi) => {
@@ -48,6 +52,10 @@ export const register = (mod: any, appApi: AppApi) => {
           setLabelArgs([`(${e1Arg},${e2Arg})`]);
           break;
         }
+        case "point": {
+          setLabelArgs([spec.point.$ggbLabel]);
+          break;
+        }
         default:
           throw new Sk.builtin.TypeError(
             `bad Vector spec kind "${(spec as any).kind}"`
@@ -58,13 +66,19 @@ export const register = (mod: any, appApi: AppApi) => {
       tp$new(args, kwargs) {
         const badArgsError = new Sk.builtin.TypeError(
           "Vector() arguments must be" +
-            " (start_point, end_point) or (x_component, y_component)"
+            " (start_point, end_point), (x_component, y_component), or (point)"
         );
 
         const make = (spec: SkGgbVectorCtorSpec) =>
           withPropertiesFromNameValuePairs(new mod.Vector(spec), kwargs);
 
         switch (args.length) {
+          case 1: {
+            if (ggb.isGgbObjectOfType(args[0], "point")) {
+              return make({ kind: "point", point: args[0] });
+            }
+            throw badArgsError;
+          }
           case 2: {
             if (ggb.everyElementIsGgbObjectOfType(args, "point")) {
               return make({ kind: "points", point1: args[0], point2: args[1] });
