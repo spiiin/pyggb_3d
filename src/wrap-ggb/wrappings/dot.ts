@@ -99,6 +99,35 @@ export const register = (mod: any, appApi: AppApi) => {
         }
         return new Sk.builtin.float_(thisVal / otherVal);
       },
+      tp$richcompare(other: SkObject, op: string) {
+        const thisVal = ggb.getValue(this.$ggbLabel);
+        let otherVal: number;
+        
+        if (other instanceof Sk.builtin.int_ || other instanceof Sk.builtin.float_) {
+          otherVal = (other as any).v;
+        } else if (other instanceof mod.Dot) {
+          otherVal = ggb.getValue((other as SkGgbDot).$ggbLabel);
+        } else {
+          return (Sk.builtin as any).NotImplemented.NotImplemented$;
+        }
+
+        switch (op) {
+          case "Lt":
+            return new Sk.builtin.bool(thisVal < otherVal);
+          case "LtE":
+            return new Sk.builtin.bool(thisVal <= otherVal);
+          case "Eq":
+            return new Sk.builtin.bool(thisVal === otherVal);
+          case "NotEq":
+            return new Sk.builtin.bool(thisVal !== otherVal);
+          case "Gt":
+            return new Sk.builtin.bool(thisVal > otherVal);
+          case "GtE":
+            return new Sk.builtin.bool(thisVal >= otherVal);
+          default:
+            return (Sk.builtin as any).NotImplemented.NotImplemented$;
+        }
+      },
     },
     methods: {
       ...ggb.withPropertiesMethodsSlice,
