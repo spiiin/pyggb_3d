@@ -116,5 +116,5 @@ export const register = (mod: any, appApi: AppApi) => {
   });
 
   mod.ClosestPoint = cls;
-  registerObjectType("point", cls);
+  registerObjectType("closestpoint", cls);
 }; 
