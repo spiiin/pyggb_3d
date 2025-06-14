@@ -63,6 +63,7 @@ export const register = (mod: any, appApi: AppApi) => {
       }
     },
     slots: {
+      tp$as_number: true,
       tp$new(args, kwargs) {
         const badArgsError = new Sk.builtin.TypeError(
           "Vector() arguments must be" +
@@ -92,6 +93,15 @@ export const register = (mod: any, appApi: AppApi) => {
           default:
             throw badArgsError;
         }
+      },
+
+      nb$negative() {
+        const ggbCmd = `-${this.$ggbLabel}`;
+        const lbl = ggb.evalCmd(ggbCmd);
+        if (!lbl) {
+          throw new Sk.builtin.TypeError("GeoGebra negative operation failed");
+        }
+        return ggb.wrapExistingGgbObject(lbl);
       },
 
       // ...sharedOpSlots,
