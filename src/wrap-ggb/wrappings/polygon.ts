@@ -158,16 +158,17 @@ export const register = (mod: any, appApi: AppApi) => {
       // ...kWithFreeCopyMethodsSlice,
     },
     getsets: {
-      area: {
-        $get() {
-          return new Sk.builtin.float_(ggb.getValue(this.$ggbLabel));
-        },
-      },
       is_visible: ggb.sharedGetSets.is_visible,
       color: ggb.sharedGetSets.color,
       color_floats: ggb.sharedGetSets.color_floats,
       opacity: ggb.sharedGetSets.opacity,
       line_thickness: ggb.sharedGetSets.line_thickness,
+      caption: ggb.sharedGetSets.caption,
+      area: {
+        $get() {
+          return new Sk.builtin.float_(ggb.getValue(this.$ggbLabel));
+        },
+      },
       _ggb_type: ggb.sharedGetSets._ggb_type,
       // TODO: List of segments?
     },

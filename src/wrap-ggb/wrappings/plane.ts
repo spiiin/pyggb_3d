@@ -207,6 +207,7 @@ export const register = (
       color: ggb.sharedGetSets.color,
       color_floats: ggb.sharedGetSets.color_floats,
       opacity: ggb.sharedGetSets.opacity,
+      caption: ggb.sharedGetSets.caption,
       _ggb_type: ggb.sharedGetSets._ggb_type,
     },
   });

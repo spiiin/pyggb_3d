@@ -156,6 +156,7 @@ export const register = (
       color_floats: ggb.sharedGetSets.color_floats,
       opacity: ggb.sharedGetSets.opacity,
       line_thickness: ggb.sharedGetSets.line_thickness,
+      caption: ggb.sharedGetSets.caption,
       _ggb_type: ggb.sharedGetSets._ggb_type,
       area: {
         $get() {

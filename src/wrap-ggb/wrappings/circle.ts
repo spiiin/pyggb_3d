@@ -149,6 +149,7 @@ export const register = (mod: any, appApi: AppApi) => {
       color_floats: ggb.sharedGetSets.color_floats,
       opacity: ggb.sharedGetSets.opacity,
       line_thickness: ggb.sharedGetSets.line_thickness,
+      caption: ggb.sharedGetSets.caption,
       radius: {
         $get(this: SkGgbCircle) {
           return new Sk.builtin.float_(this.$radiusNumber().$value());

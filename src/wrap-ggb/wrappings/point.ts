@@ -218,6 +218,7 @@ export const register = (
       color: ggb.sharedGetSets.color,
       color_floats: ggb.sharedGetSets.color_floats,
       size: ggb.sharedGetSets.size,
+      caption: ggb.sharedGetSets.caption,
       x: {
         $get(this: SkGgbPoint) {
           return new Sk.builtin.float_(this.$xCoord());
