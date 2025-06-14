@@ -6,6 +6,7 @@ import {
   SkGgbObject,
   withPropertiesFromNameValuePairs,
   WrapExistingCtorSpec,
+  AugmentedGgbApi,
 } from "../shared";
 import { SkObject, SkulptApi } from "../../shared/vendor-types/skulptapi";
 
@@ -21,7 +22,8 @@ type SkGgbLineCtorSpec =
   | { kind: "coefficients"; coeffs: [SkObject, SkObject] };
 
 export const register = (mod: any, appApi: AppApi) => {
-  const ggb = augmentedGgbApi(appApi.ggb);
+  const ggb: AugmentedGgbApi = augmentedGgbApi(appApi.ggb);
+  const skApi = appApi.sk;
 
   const cls = Sk.abstr.buildNativeClass("Line", {
     constructor: function Line(this: SkGgbLine, spec: SkGgbLineCtorSpec) {
@@ -31,6 +33,14 @@ export const register = (mod: any, appApi: AppApi) => {
       switch (spec.kind) {
         case "wrap-existing": {
           this.$ggbLabel = spec.label;
+          this.$updateHandlers = [];
+          this.$clickHandlers = [];
+          ggb.registerObjectUpdateListener(this.$ggbLabel, () =>
+            this.$fireUpdateEvents()
+          );
+          ggb.registerObjectClickListener(this.$ggbLabel, () =>
+            this.$fireClickEvents()
+          );
           return;
         }
         case "point-point": {
@@ -80,6 +90,20 @@ export const register = (mod: any, appApi: AppApi) => {
       },
     },
     methods: {
+      when_moved: {
+        $meth(this: SkGgbLine, pyFun: any) {
+          this.$updateHandlers.push(pyFun);
+          return pyFun;
+        },
+        $flags: { OneArg: true },
+      },
+      when_clicked: {
+        $meth(this: SkGgbLine, pyFun: any) {
+          this.$clickHandlers.push(pyFun);
+          return pyFun;
+        },
+        $flags: { OneArg: true },
+      },
       ...ggb.freeCopyMethodsSlice,
     },
     getsets: {
@@ -90,6 +114,26 @@ export const register = (mod: any, appApi: AppApi) => {
       caption: ggb.sharedGetSets.caption,
       _ggb_type: ggb.sharedGetSets._ggb_type,
       _ggb_exists: ggb.sharedGetSets._ggb_exists,
+    },
+    proto: {
+      $fireUpdateEvents(this: SkGgbLine) {
+        this.$updateHandlers.forEach((fun) => {
+          try {
+            Sk.misceval.callsimOrSuspend(fun);
+          } catch (e) {
+            skApi.onError(e as any);
+          }
+        });
+      },
+      $fireClickEvents(this: SkGgbLine) {
+        this.$clickHandlers.forEach((fun) => {
+          try {
+            Sk.misceval.callsimOrSuspend(fun);
+          } catch (e) {
+            skApi.onError(e as any);
+          }
+        });
+      },
     },
   });
 

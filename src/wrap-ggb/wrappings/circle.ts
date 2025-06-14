@@ -5,6 +5,8 @@ import {
   WrapExistingCtorSpec,
   SkGgbObject,
   setGgbLabelFromArgs,
+  setGgbLabelFromCmd,
+  AugmentedGgbApi,
 } from "../shared";
 import { SkObject, SkulptApi } from "../../shared/vendor-types/skulptapi";
 import { registerObjectType } from "../type-registry";
@@ -14,6 +16,8 @@ declare var Sk: SkulptApi;
 interface SkGgbCircle extends SkGgbObject {
   radiusNumber: any; // TODO: SkGgbNumber | null ??
   $radiusNumber: (this: SkGgbCircle) => any;
+  $updateHandlers: any[];
+  $clickHandlers: any[];
 }
 
 type SkGgbCircleCtorSpec =
@@ -34,11 +38,14 @@ type SkGgbCircleCtorSpec =
     };
 
 export const register = (mod: any, appApi: AppApi) => {
-  const ggb = augmentedGgbApi(appApi.ggb);
+  const ggb: AugmentedGgbApi = augmentedGgbApi(appApi.ggb);
+  const skApi = appApi.sk;
 
   const cls = Sk.abstr.buildNativeClass("Circle", {
     constructor: function Circle(this: SkGgbCircle, spec: SkGgbCircleCtorSpec) {
       this.radiusNumber = null;
+      this.$updateHandlers = [];
+      this.$clickHandlers = [];
 
       const setLabelArgs = setGgbLabelFromArgs(ggb, this, "Circle");
 
@@ -65,6 +72,13 @@ export const register = (mod: any, appApi: AppApi) => {
             `bad Circle spec kind "${(spec as any).kind}"`
           );
       }
+
+      ggb.registerObjectUpdateListener(this.$ggbLabel, () =>
+        this.$fireUpdateEvents()
+      );
+      ggb.registerObjectClickListener(this.$ggbLabel, () =>
+        this.$fireClickEvents()
+      );
     },
     proto: {
       $radiusNumber(this: SkGgbCircle) {
@@ -74,6 +88,24 @@ export const register = (mod: any, appApi: AppApi) => {
           this.radiusNumber = new mod.Number({ kind: "wrap-existing", label });
         }
         return this.radiusNumber;
+      },
+      $fireUpdateEvents(this: SkGgbCircle) {
+        this.$updateHandlers.forEach((fun) => {
+          try {
+            Sk.misceval.callsimOrSuspend(fun);
+          } catch (e) {
+            skApi.onError(e as any);
+          }
+        });
+      },
+      $fireClickEvents(this: SkGgbCircle) {
+        this.$clickHandlers.forEach((fun) => {
+          try {
+            Sk.misceval.callsimOrSuspend(fun);
+          } catch (e) {
+            skApi.onError(e as any);
+          }
+        });
       },
     },
     slots: {
@@ -140,6 +172,20 @@ export const register = (mod: any, appApi: AppApi) => {
       },
     },
     methods: {
+      when_moved: {
+        $meth(this: SkGgbCircle, pyFun: any) {
+          this.$updateHandlers.push(pyFun);
+          return pyFun;
+        },
+        $flags: { OneArg: true },
+      },
+      when_clicked: {
+        $meth(this: SkGgbCircle, pyFun: any) {
+          this.$clickHandlers.push(pyFun);
+          return pyFun;
+        },
+        $flags: { OneArg: true },
+      },
       ...ggb.withPropertiesMethodsSlice,
       ...ggb.freeCopyMethodsSlice,
     },

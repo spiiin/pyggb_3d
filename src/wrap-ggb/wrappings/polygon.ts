@@ -23,6 +23,8 @@ declare var Sk: SkulptApi;
 interface SkGgbPolygon extends SkGgbObject {
   ctorPointLabels: Array<string> | null;
   segments: Array<SkObject>;
+  $updateHandlers: Array<any>;
+  $clickHandlers: Array<any>;
 }
 
 type SkGgbPolygonCtorSpec =
@@ -40,6 +42,7 @@ type SkGgbPolygonCtorSpec =
 
 export const register = (mod: any, appApi: AppApi) => {
   const ggb: AugmentedGgbApi = augmentedGgbApi(appApi.ggb);
+  const skApi = appApi.sk;
 
   const cls = Sk.abstr.buildNativeClass("Polygon", {
     constructor: function Polygon(
@@ -47,6 +50,8 @@ export const register = (mod: any, appApi: AppApi) => {
       spec: SkGgbPolygonCtorSpec
     ) {
       this.ctorPointLabels = null;
+      this.$updateHandlers = [];
+      this.$clickHandlers = [];
       switch (spec.kind) {
         case "points-array": {
           this.ctorPointLabels = spec.points.map((p) => p.$ggbLabel);
@@ -55,6 +60,12 @@ export const register = (mod: any, appApi: AppApi) => {
           // TODO: Should have n.args + 1 labels here; check this.
           this.$ggbLabel = lbls[0];
           this.segments = lbls.slice(1).map(ggb.wrapExistingGgbObject);
+          ggb.registerObjectUpdateListener(this.$ggbLabel, () =>
+            this.$fireUpdateEvents()
+          );
+          ggb.registerObjectClickListener(this.$ggbLabel, () =>
+            this.$fireClickEvents()
+          );
           break;
         }
         case "two-points-n-sides": {
@@ -67,6 +78,12 @@ export const register = (mod: any, appApi: AppApi) => {
           // TODO: Should have n.args + 1 labels here; check this.
           this.$ggbLabel = lbls[0];
           this.segments = lbls.slice(1).map(ggb.wrapExistingGgbObject);
+          ggb.registerObjectUpdateListener(this.$ggbLabel, () =>
+            this.$fireUpdateEvents()
+          );
+          ggb.registerObjectClickListener(this.$ggbLabel, () =>
+            this.$fireClickEvents()
+          );
           break;
         }
         default:
@@ -152,10 +169,40 @@ export const register = (mod: any, appApi: AppApi) => {
           }
         },
       },
-      // TODO: Any insight into why CopyFreeObject(poly) gives a number?
-      // Until then, leave this disabled:
-      //
-      // ...kWithFreeCopyMethodsSlice,
+      when_moved: {
+        $meth(this: SkGgbPolygon, pyFun: any) {
+          this.$updateHandlers.push(pyFun);
+          return pyFun;
+        },
+        $flags: { OneArg: true },
+      },
+      when_clicked: {
+        $meth(this: SkGgbPolygon, pyFun: any) {
+          this.$clickHandlers.push(pyFun);
+          return pyFun;
+        },
+        $flags: { OneArg: true },
+      },
+    },
+    proto: {
+      $fireUpdateEvents(this: SkGgbPolygon) {
+        this.$updateHandlers.forEach((fun) => {
+          try {
+            Sk.misceval.callsimOrSuspend(fun);
+          } catch (e) {
+            skApi.onError(e as any);
+          }
+        });
+      },
+      $fireClickEvents(this: SkGgbPolygon) {
+        this.$clickHandlers.forEach((fun) => {
+          try {
+            Sk.misceval.callsimOrSuspend(fun);
+          } catch (e) {
+            skApi.onError(e as any);
+          }
+        });
+      },
     },
     getsets: {
       is_visible: ggb.sharedGetSets.is_visible,

@@ -109,8 +109,12 @@ export const register = (
       );
 
       this.$updateHandlers = [];
+      this.$clickHandlers = [];
       ggb.registerObjectUpdateListener(this.$ggbLabel, () =>
         this.$fireUpdateEvents()
+      );
+      ggb.registerObjectClickListener(this.$ggbLabel, () =>
+        this.$fireClickEvents()
       );
     },
     slots: {
@@ -199,11 +203,27 @@ export const register = (
           }
         });
       },
+      $fireClickEvents(this: SkGgbPoint) {
+        this.$clickHandlers.forEach((fun) => {
+          try {
+            Sk.misceval.callsimOrSuspend(fun);
+          } catch (e) {
+            skApi.onError(e as any);
+          }
+        });
+      },
     },
     methods: {
       when_moved: {
         $meth(this: SkGgbPoint, pyFun: any) {
           this.$updateHandlers.push(pyFun);
+          return pyFun;
+        },
+        $flags: { OneArg: true },
+      },
+      when_clicked: {
+        $meth(this: SkGgbPoint, pyFun: any) {
+          this.$clickHandlers.push(pyFun);
           return pyFun;
         },
         $flags: { OneArg: true },

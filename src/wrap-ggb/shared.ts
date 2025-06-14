@@ -15,7 +15,9 @@ import { OperationSlots, operationSlots } from "./operations";
 export interface SkGgbObject extends SkObject {
   $ggbLabel: string;
   $updateHandlers: Array<any>;
+  $clickHandlers: Array<any>;
   $fireUpdateEvents(...args: Array<any>): any;
+  $fireClickEvents(...args: Array<any>): any;
 }
 
 declare var Sk: SkulptApi;
@@ -546,6 +548,7 @@ export type AugmentedGgbApi = {
   setCoords(label: string, x: number, y: number, z?: number): void;
   deleteObject(label: string): void;
   registerObjectUpdateListener(label: string, fun: () => void): void;
+  registerObjectClickListener(label: string, fun: () => void): void;
   sharedOpSlots: OperationSlots;
 };
 
@@ -583,6 +586,8 @@ export const augmentedGgbApi = (ggbApi: GgbApi): AugmentedGgbApi => {
   const deleteObject = (label: string): void => ggbApi.deleteObject(label);
   const registerObjectUpdateListener = (label: string, fun: () => void): void =>
     ggbApi.registerObjectUpdateListener(label, fun);
+  const registerObjectClickListener = (label: string, fun: () => void): void =>
+    ggbApi.registerObjectClickListener(label, fun);
 
   // TypeScript can't (yet?) infer type predicate return values.
   type IsGgbObjectPredicate = (x: SkObject) => x is SkGgbObject;
@@ -616,6 +621,7 @@ export const augmentedGgbApi = (ggbApi: GgbApi): AugmentedGgbApi => {
     setCoords,
     deleteObject,
     registerObjectUpdateListener,
+    registerObjectClickListener,
     sharedOpSlots: operationSlots(ggbApi),
   };
 

@@ -45,6 +45,8 @@ export type GgbApi = {
 
   registerObjectUpdateListener(label: string, fun: AnyVoidFunction): void;
 
+  registerObjectClickListener(label: string, fun: AnyVoidFunction): void;
+
   reset(): void;
   newConstruction(): void;
   setPerspective(perspective: string): void;
