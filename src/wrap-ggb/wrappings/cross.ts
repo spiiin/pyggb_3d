@@ -44,6 +44,7 @@ export const register = (mod: any, appApi: AppApi) => {
       }
     },
     slots: {
+      tp$as_number: true,
       tp$new(args: Array<SkObject>, kwargs: KeywordArgsArray) {
         const badArgsError = new Sk.builtin.TypeError(
           "Cross() arguments must be (vector1, vector2)"
@@ -72,6 +73,14 @@ export const register = (mod: any, appApi: AppApi) => {
       },
       tp$repr() {
         return this.tp$str();
+      },
+      nb$negative() {
+        const ggbCmd = `-${this.$ggbLabel}`;
+        const lbl = ggb.evalCmd(ggbCmd);
+        if (!lbl) {
+          throw new Sk.builtin.TypeError("GeoGebra negative operation failed");
+        }
+        return ggb.wrapExistingGgbObject(lbl);
       },
     },
     methods: {
