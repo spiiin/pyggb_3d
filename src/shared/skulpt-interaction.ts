@@ -108,6 +108,8 @@ export const runPythonProgram = (
     "    return Midpoint(*args, is_visible=False, **kwargs)",
     "def UnitVectorI(*args, **kwargs):",
     "    return UnitVector(*args, is_visible=False, **kwargs)",
+    "def TranslateI(*args, **kwargs):",
+    "    return Translate(*args, is_visible=False, **kwargs)",
     "def CentroidI(*args, **kwargs):",
     "    return Centroid(*args, is_visible=False, **kwargs)",
     "def PointI(*args, **kwargs):",
@@ -220,6 +222,8 @@ export const runPythonProgram = (
     "    return CircularSectorThreePoints(*args, is_visible=False, **kwargs)",
     "def CircularSegmentThreePointsI(*args, **kwargs):",
     "    return CircularSegmentThreePoints(*args, is_visible=False, **kwargs)",
+    "def PerpendicularPlaneI(*args, **kwargs):",
+    "    return PerpendicularPlane(*args, is_visible=False, **kwargs)",
   ];
   const codePreamble = codePreambleLines.join("\n") + "\n";
   const codeText = codePreamble + userCodeText;
