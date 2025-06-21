@@ -40,6 +40,7 @@ export type GgbApi = {
   deleteObject(label: string): void;
   exists(label: string): boolean;
   getObjectNumber(): number;
+  getAllObjectNames(): string[];
 
   evalCommandGetLabels(cmd: string): string;
 
