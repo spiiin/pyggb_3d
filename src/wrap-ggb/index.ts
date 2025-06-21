@@ -29,6 +29,7 @@ import { register as registerConvexHull } from "./wrappings/convexhull";
 import { register as registerTranslate } from "./wrappings/translate";
 import { register as registerClosestPoint } from "./wrappings/closestpoint";
 import { register as registerDeleteObject } from "./wrappings/delete-object";
+import { register as registerSetPerspective } from "./wrappings/set-perspective";
 
 import { register as registerClearConsole } from "./app-ui/clear-console";
 
@@ -78,6 +79,7 @@ declare var Sk: SkulptApi;
   registerTranslate(mod, appApi);
   registerClosestPoint(mod, appApi);
   registerDeleteObject(mod, appApi);
+  registerSetPerspective(mod, appApi);
 
   registerClearConsole(mod, appApi);
 
