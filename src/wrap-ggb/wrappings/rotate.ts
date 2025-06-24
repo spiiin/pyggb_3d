@@ -7,11 +7,23 @@ declare var Sk: SkulptApi;
 export const register = (mod: any, appApi: AppApi) => {
   const ggb: AugmentedGgbApi = augmentedGgbApi(appApi.ggb);
 
+  // Создаем константы для осей
+  const xAxis = new Sk.builtin.str("xAxis");
+  const yAxis = new Sk.builtin.str("yAxis");
+  const zAxis = new Sk.builtin.str("zAxis");
+
+  // Добавляем константы в модуль
+  mod.xAxis = xAxis;
+  mod.yAxis = yAxis;
+  mod.zAxis = zAxis;
+
   const fun = new Sk.builtin.func((...args) => {
     const badArgsError = new Sk.builtin.TypeError(
       "Rotate() arguments must be" +
         " (object, angle)" +
-        " or (object, angle, rotation_center_point)"
+        " or (object, angle, rotation_center_point)" +
+        " or (object, angle, axis_of_rotation)" +
+        " or (object, angle, point_on_axis, axis_direction_or_plane)"
     );
 
     const ggbRotate = (extraArgs: Array<string>) => {
@@ -31,13 +43,48 @@ export const register = (mod: any, appApi: AppApi) => {
 
     switch (args.length) {
       case 2: {
+        // Rotate(object, angle) - вращение вокруг начала координат
         return ggbRotate([]);
       }
       case 3: {
-        if (!ggb.isGgbObjectOfType(args[2], "point")) {
+        // Проверяем, что это точка или ось
+        if (ggb.isGgbObjectOfType(args[2], "point")) {
+          // Rotate(object, angle, point) - вращение вокруг точки
+          return ggbRotate([args[2].$ggbLabel]);
+        } else if (Sk.builtin.checkString(args[2])) {
+          // Rotate(object, angle, axis) - вращение вокруг оси
+          const axisStr = args[2].v;
+          if (axisStr === "xAxis" || axisStr === "yAxis" || axisStr === "zAxis") {
+            return ggbRotate([axisStr]);
+          } else {
+            throw new Sk.builtin.TypeError(
+              "Axis of rotation must be xAxis, yAxis, or zAxis"
+            );
+          }
+        } else {
           throw badArgsError;
         }
-        return ggbRotate([args[2].$ggbLabel]);
+      }
+      case 4: {
+        // Rotate(object, angle, point_on_axis, axis_direction_or_plane)
+        if (!ggb.isGgbObjectOfType(args[2], "point")) {
+          throw new Sk.builtin.TypeError(
+            "Third argument must be a point on the axis"
+          );
+        }
+        
+        // Четвертый аргумент может быть вектором (направление оси) или плоскостью
+        if (ggb.isGgbObjectOfType(args[3], "vector")) {
+          // Направление оси - вектор
+          return ggbRotate([args[2].$ggbLabel, args[3].$ggbLabel]);
+        } else if (ggb.isGgbObjectOfType(args[3], "plane")) {
+          // Плоскость
+          return ggbRotate([args[2].$ggbLabel, args[3].$ggbLabel]);
+        } else {
+          throw new Sk.builtin.TypeError(
+            "Fourth argument must be a vector (axis direction) or a plane"
+          );
+        }
       }
       default:
         throw badArgsError;
