@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "https://spiiin.github.io/pyggb_3d/static/css/main.38071bcd.css",
-    "main.js": "https://spiiin.github.io/pyggb_3d/static/js/main.f930641f.js",
+    "main.js": "https://spiiin.github.io/pyggb_3d/static/js/main.e5cfa160.js",
     "index.html": "https://spiiin.github.io/pyggb_3d/index.html",
     "main.38071bcd.css.map": "https://spiiin.github.io/pyggb_3d/static/css/main.38071bcd.css.map",
-    "main.f930641f.js.map": "https://spiiin.github.io/pyggb_3d/static/js/main.f930641f.js.map"
+    "main.e5cfa160.js.map": "https://spiiin.github.io/pyggb_3d/static/js/main.e5cfa160.js.map"
   },
   "entrypoints": [
     "static/css/main.38071bcd.css",
-    "static/js/main.f930641f.js"
+    "static/js/main.e5cfa160.js"
   ]
 }
