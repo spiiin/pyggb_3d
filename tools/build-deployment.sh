@@ -8,8 +8,11 @@ if [ "$(echo "$node_version" | grep -c -E '^v18[.]')" -ne 1 ]; then
     exit 1
 fi
 
-PUBLIC_URL=/pyggb
+PUBLIC_URL=/pyggb_3d
 export PUBLIC_URL
+
+REACT_APP_DOCS_BASE_URL_WITHIN_APP=doc
+export REACT_APP_DOCS_BASE_URL_WITHIN_APP
 
 REPO_ROOT=$(cd_or_fail "$(dirname "$0")"; cd_or_fail ..; pwd -P)
 cd_or_fail "$REPO_ROOT"
