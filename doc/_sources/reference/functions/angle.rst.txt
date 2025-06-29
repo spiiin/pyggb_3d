@@ -1,0 +1,31 @@
+Angle function
+==============
+
+.. py:function:: Angle(vector1, vector2)
+
+   Calculate the angle between two vectors. Returns the angle in radians
+   (or degrees, depending on GeoGebra's current angle unit setting).
+   
+   The result is in the range [0, 2π] radians or [0, 360°] degrees.
+
+   :param vector1: The first vector
+   :param vector2: The second vector
+   :returns: The angle between the vectors as a Python float
+
+   Example::
+
+      v1 = Vector(1, 1)      # Vector at 45° from x-axis
+      v2 = Vector(2, 5)      # Another vector
+      angle = Angle(v1, v2)  # Get angle between them
+      print(f"Angle: {angle} radians")
+
+   Note::
+   
+      The angle is measured from the first vector to the second vector
+      in counterclockwise direction.
+
+
+.. seealso::
+
+   `GeoGebra Angle() reference
+   <https://geogebra.github.io/docs/manual/en/commands/Angle/>`_ 

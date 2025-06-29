@@ -1,0 +1,64 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH
+
+variables:
+  S3_STATIC_BUCKET: python-geogebra
+  PYGGB_HOSTED_BASE_PATH: python
+
+stages:
+  - build-dependencies
+  - build
+  - release
+
+build-examples:
+  stage: build-dependencies
+  tags:
+    - docker
+  image: python:3.13-alpine
+  script:
+    - python3 tools/build_examples_index.py ./public/examples > ./public/examples/index.json
+  artifacts:
+    paths:
+      - public/examples/index.json
+
+build-docs:
+  stage: build-dependencies
+  tags:
+    - docker
+  image: python:3.13-alpine
+  before_script:
+    - apk --no-cache add curl make
+  script:
+    - curl -sSL https://install.python-poetry.org | python3 -
+    - POETRY=$HOME/.local/bin/poetry
+    - ( cd doc && $POETRY install && $POETRY run make html )
+    - mv doc/build/html public/doc
+  artifacts:
+    paths:
+      - public/doc/
+
+build:
+  stage: build
+  tags:
+    - docker
+  image: node:18.16-alpine
+  before_script:
+    - npm clean-install
+  script:
+    - export PUBLIC_URL=/${PYGGB_HOSTED_BASE_PATH}
+    - export REACT_APP_DOCS_BASE_URL_WITHIN_APP=doc
+    - npm run build
+  artifacts:
+    paths:
+      - build/
+
+publish:
+  stage: release
+  tags:
+    - amd
+  image: registry.gitlab.com/gitlab-org/cloud-deploy/aws-base:latest
+  script:
+    - aws s3 sync ./build s3://${S3_STATIC_BUCKET}/${PYGGB_HOSTED_BASE_PATH}
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

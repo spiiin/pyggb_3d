@@ -1,0 +1,83 @@
+Miscellaneous functions
+=======================
+
+.. py:class:: Function
+
+   .. py:classmethod:: sin(x)
+
+         Return a dynamic :py:class:`Number` for the sine of the given
+         *x* value.
+
+   .. py:classmethod:: cos(x)
+
+         Return a dynamic :py:class:`Number` for the sine of the given
+         *x* value.
+
+   .. py:classmethod:: compare_LT(v, w)
+
+         Return a dynamic :py:class:`Boolean` indicating whether the
+         given *v* is less than the given *w*.
+
+         Example:
+
+         .. code-block:: python
+
+            s = Slider(-4, 4)
+            p = Point(s, If(Function.compare_LT(s, 0), Number(1), Number(2)))
+
+
+Extracting numerical values
+===========================
+
+Many geometric objects in PyGGB have numerical values that can be extracted 
+for further processing in Python. Here are the common methods:
+
+**Dot Product Objects**
+
+The ``Dot`` function returns an object representing the dot product of two vectors.
+To extract its numerical value:
+
+.. code-block:: python
+
+   v1 = Vector(3, 4)
+   v2 = Vector(1, 2)
+   dot_result = Dot(v1, v2)
+   
+   # Method 1: Using .value property (RECOMMENDED)
+   numerical_value = dot_result.value
+   
+   # Method 2: Using float() conversion
+   float_value = float(dot_result)
+   
+   # Method 3: Direct arithmetic operations
+   doubled = dot_result * 2
+   sum_result = dot_result + 5
+   
+   # Method 4: Using in comparisons
+   if dot_result > 10:
+       print("Large dot product")
+
+**Distance and Angle Functions**
+
+Similar approaches work for other numerical functions:
+
+.. code-block:: python
+
+   p1 = Point(0, 0)
+   p2 = Point(3, 4)
+   dist = Distance(p1, p2)
+   distance_value = dist  # Distance returns a Python float directly
+   
+   v1 = Vector(1, 0)
+   v2 = Vector(0, 1)
+   angle = Angle(v1, v2)
+   angle_value = angle  # Angle returns a Python float directly
+
+**General Pattern**
+
+For objects that wrap numerical values, use the ``.value`` property:
+
+.. code-block:: python
+
+   obj = SomeNumericalObject(...)
+   number = obj.value  # Extract as Python float
